@@ -68,3 +68,24 @@ The program creates two files in the folder you run it from:
 - `budgets.csv` holds your monthly budget for each category
 
 You can open these in a spreadsheet program. They are listed in `.gitignore` so your personal data isn't uploaded to GitHub.
+
+## Web version
+
+The `web/` folder has a browser version of the same tracker. It has the same features (income, expenses, the four categories, monthly budgets with warnings, monthly and all-time reports, and fixing or deleting entries) and needs no compiler.
+
+To try it, open `web/index.html` in any web browser. Your entries are saved in that browser (using `localStorage`), so they stay there when you come back, but they are not shared with anyone and are not mixed with the C++ program's CSV files.
+
+The files are:
+
+- `web/index.html` holds the page layout
+- `web/style.css` holds the colors and spacing
+- `web/app.js` holds the program logic
+
+### Put it online with GitHub Pages
+
+1. On GitHub, open this repository and click **Settings**, then **Pages**.
+2. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
+3. Pick the `main` branch and the `/ (root)` folder, then click **Save**.
+4. After a minute or two, the tracker is live at `https://<your-username>.github.io/expense-tracker/web/`.
+
+Everyone who opens that link gets their own private copy of the data in their own browser.
