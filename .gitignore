@@ -10,6 +10,7 @@ a.out
 # Local data files created when the program runs
 transactions.csv
 budgets.csv
+goals.csv
 
 # Editor and OS files
 .vscode/
