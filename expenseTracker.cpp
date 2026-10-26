@@ -1,0 +1,369 @@
+// Expense Tracker
+// Records income and expenses, sorts expenses into categories,
+// and shows how much money is left.
+// Transactions are saved to transactions.csv so they are kept between runs.
+// Monthly budgets per category are saved to budgets.csv.
+
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <ctime>
+#include <cctype>
+using namespace std;
+
+const string FILE_NAME = "transactions.csv";
+const string BUDGET_FILE = "budgets.csv";
+
+// One income or expense entry
+struct Transaction
+{
+    string date;     // YYYY-MM-DD
+    string type;     // Income or Expense
+    string category; // Food, Rent, Transport, Other (or Income)
+    double amount;
+};
+
+vector<Transaction> transactions;
+string names[4] = {"Food", "Rent", "Transport", "Other"};
+double budgets[4] = {0, 0, 0, 0}; // 0 means no budget set
+
+// Returns today's date as YYYY-MM-DD
+string todayDate()
+{
+    time_t now = time(0);
+    tm* local = localtime(&now);
+    char buffer[11];
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d", local);
+    return buffer;
+}
+
+// Turns "food", "FOOD", etc. into a number 0-3 (anything unknown is Other)
+int categoryIndex(string category)
+{
+    for (int i = 0; i < (int)category.size(); i++)
+        category[i] = tolower(category[i]);
+
+    if (category == "food") return 0;
+    if (category == "rent") return 1;
+    if (category == "transport") return 2;
+    return 3;
+}
+
+// Reads a number typed by the user
+double readAmount(string prompt)
+{
+    double amount;
+    cout << prompt;
+    while (!(cin >> amount) || amount < 0)
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Please type a positive number: ";
+    }
+    cin.ignore(1000, '\n');
+    return amount;
+}
+
+// Reads all past transactions from the file (if it exists)
+void loadTransactions()
+{
+    ifstream file(FILE_NAME);
+    string line;
+    while (getline(file, line))
+    {
+        stringstream ss(line);
+        Transaction t;
+        string amountText;
+        getline(ss, t.date, ',');
+        getline(ss, t.type, ',');
+        getline(ss, t.category, ',');
+        getline(ss, amountText, ',');
+
+        if (amountText == "")
+            continue; // skip blank or broken lines
+
+        t.amount = stod(amountText);
+        transactions.push_back(t);
+    }
+}
+
+// Writes every transaction back to the file (used after add, delete or fix)
+void saveTransactions()
+{
+    ofstream file(FILE_NAME);
+    for (int i = 0; i < (int)transactions.size(); i++)
+    {
+        Transaction t = transactions[i];
+        file << t.date << "," << t.type << "," << t.category << "," << t.amount << endl;
+    }
+}
+
+void loadBudgets()
+{
+    ifstream file(BUDGET_FILE);
+    string line;
+    while (getline(file, line))
+    {
+        stringstream ss(line);
+        string category, amountText;
+        getline(ss, category, ',');
+        getline(ss, amountText, ',');
+        if (amountText != "")
+            budgets[categoryIndex(category)] = stod(amountText);
+    }
+}
+
+void saveBudgets()
+{
+    ofstream file(BUDGET_FILE);
+    for (int i = 0; i < 4; i++)
+        file << names[i] << "," << budgets[i] << endl;
+}
+
+// How much was spent in one category during one month ("YYYY-MM")
+double spentInMonth(int cat, string month)
+{
+    double total = 0;
+    for (int i = 0; i < (int)transactions.size(); i++)
+    {
+        Transaction t = transactions[i];
+        if (t.type == "Expense" && categoryIndex(t.category) == cat
+            && t.date.substr(0, 7) == month)
+            total += t.amount;
+    }
+    return total;
+}
+
+// Prints a warning if this month's spending in a category is over budget
+void checkBudget(int cat)
+{
+    string month = todayDate().substr(0, 7);
+    double spent = spentInMonth(cat, month);
+    if (budgets[cat] > 0 && spent > budgets[cat])
+    {
+        cout << "WARNING: You are over your " << names[cat] << " budget by $"
+             << fixed << setprecision(2) << spent - budgets[cat]
+             << " this month!" << endl;
+    }
+}
+
+// Prints totals and the category table.
+// month is "YYYY-MM" for one month, or "" for all time.
+void printReport(string month)
+{
+    double totalIncome = 0, totalExpenses = 0;
+    double amounts[4] = {0, 0, 0, 0};
+
+    for (int i = 0; i < (int)transactions.size(); i++)
+    {
+        Transaction t = transactions[i];
+        if (month != "" && t.date.substr(0, 7) != month)
+            continue; // not in the month we want
+
+        if (t.type == "Income")
+            totalIncome += t.amount;
+        else
+        {
+            amounts[categoryIndex(t.category)] += t.amount;
+            totalExpenses += t.amount;
+        }
+    }
+
+    cout << fixed << setprecision(2);
+    if (month == "")
+        cout << "\n===== Summary (all time) =====" << endl;
+    else
+        cout << "\n===== Report for " << month << " =====" << endl;
+
+    cout << "Total income:   $" << setw(10) << totalIncome << endl;
+    cout << "Total expenses: $" << setw(10) << totalExpenses << endl;
+    cout << "Money left:     $" << setw(10) << totalIncome - totalExpenses << endl;
+
+    // Find the biggest category
+    int biggest = 0;
+    for (int i = 1; i < 4; i++)
+    {
+        if (amounts[i] > amounts[biggest])
+            biggest = i;
+    }
+
+    cout << "\n" << left << setw(12) << "Category"
+         << right << setw(12) << "Amount"
+         << setw(10) << "Percent";
+    if (month != "")
+        cout << setw(12) << "Budget";
+    cout << endl;
+    cout << "----------------------------------------------" << endl;
+
+    for (int i = 0; i < 4; i++)
+    {
+        double percent = 0;
+        if (totalExpenses > 0)
+            percent = amounts[i] / totalExpenses * 100;
+
+        cout << left << setw(12) << names[i]
+             << right << "$" << setw(11) << amounts[i]
+             << setw(9) << percent << "%";
+
+        // Budgets are monthly, so only show them in a month report
+        if (month != "")
+        {
+            if (budgets[i] > 0)
+                cout << "  $" << setw(9) << budgets[i];
+            else
+                cout << setw(12) << "-";
+            if (budgets[i] > 0 && amounts[i] > budgets[i])
+                cout << "  OVER";
+        }
+
+        if (totalExpenses > 0 && i == biggest)
+            cout << "  <-- biggest";
+
+        cout << endl;
+    }
+}
+
+// Shows every transaction with a number so the user can pick one
+void listTransactions()
+{
+    cout << fixed << setprecision(2);
+    cout << "\n#   Date        Type     Category       Amount" << endl;
+    for (int i = 0; i < (int)transactions.size(); i++)
+    {
+        Transaction t = transactions[i];
+        cout << left << setw(4) << i + 1 << setw(12) << t.date
+             << setw(9) << t.type << setw(10) << t.category
+             << right << "$" << setw(10) << t.amount << endl;
+    }
+}
+
+// Asks which entry to change. Returns its position, or -1 to cancel.
+int pickTransaction()
+{
+    if (transactions.size() == 0)
+    {
+        cout << "There are no entries yet." << endl;
+        return -1;
+    }
+    listTransactions();
+    double number = readAmount("Entry number (0 to cancel): ");
+    int index = (int)number - 1;
+    if (index < 0 || index >= (int)transactions.size())
+        return -1;
+    return index;
+}
+
+int main()
+{
+    string choice;
+
+    cout << "===== Expense Tracker =====" << endl;
+
+    loadTransactions();
+    loadBudgets();
+    cout << "Loaded " << transactions.size() << " past transaction(s)." << endl;
+
+    while (true)
+    {
+        cout << "\nI = income, E = expense, R = month report, B = set budget," << endl;
+        cout << "L = list entries, F = fix entry, D = delete entry, Q = quit: ";
+        getline(cin, choice);
+
+        if (choice == "Q" || choice == "q")
+            break;
+
+        if (choice == "I" || choice == "i")
+        {
+            Transaction t;
+            t.amount = readAmount("Income amount: $");
+            t.date = todayDate();
+            t.type = "Income";
+            t.category = "Income";
+            transactions.push_back(t);
+            saveTransactions();
+        }
+        else if (choice == "E" || choice == "e")
+        {
+            Transaction t;
+            string category;
+            t.amount = readAmount("Expense amount: $");
+            cout << "Category (Food, Rent, Transport, Other): ";
+            getline(cin, category);
+
+            int cat = categoryIndex(category);
+            t.date = todayDate();
+            t.type = "Expense";
+            t.category = names[cat];
+            transactions.push_back(t);
+            saveTransactions();
+            checkBudget(cat);
+        }
+        else if (choice == "R" || choice == "r")
+        {
+            string month;
+            cout << "Month (YYYY-MM), or press Enter for this month: ";
+            getline(cin, month);
+            if (month == "")
+                month = todayDate().substr(0, 7);
+            printReport(month);
+        }
+        else if (choice == "B" || choice == "b")
+        {
+            string category;
+            cout << "Category (Food, Rent, Transport, Other): ";
+            getline(cin, category);
+            int cat = categoryIndex(category);
+            budgets[cat] = readAmount("Monthly budget for " + names[cat] + " (0 for none): $");
+            saveBudgets();
+            cout << "Budget saved." << endl;
+        }
+        else if (choice == "L" || choice == "l")
+        {
+            listTransactions();
+        }
+        else if (choice == "D" || choice == "d")
+        {
+            int index = pickTransaction();
+            if (index == -1)
+                continue;
+
+            string answer;
+            cout << "Delete entry " << index + 1 << "? (y/n): ";
+            getline(cin, answer);
+            if (answer == "y" || answer == "Y")
+            {
+                transactions.erase(transactions.begin() + index);
+                saveTransactions();
+                cout << "Entry deleted." << endl;
+            }
+        }
+        else if (choice == "F" || choice == "f")
+        {
+            int index = pickTransaction();
+            if (index == -1)
+                continue;
+
+            transactions[index].amount = readAmount("Correct amount: $");
+            if (transactions[index].type == "Expense")
+            {
+                string category;
+                cout << "Correct category (Food, Rent, Transport, Other): ";
+                getline(cin, category);
+                transactions[index].category = names[categoryIndex(category)];
+            }
+            saveTransactions();
+            cout << "Entry fixed." << endl;
+        }
+        else
+        {
+            cout << "Invalid choice. Try again." << endl;
+        }
+    }
+
+    printReport("");
+
+    return 0;
+}

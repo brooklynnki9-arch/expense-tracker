@@ -1,0 +1,16 @@
+# Compiled program
+expenseTracker
+expenseTracker.exe
+*.exe
+*.o
+*.obj
+*.out
+a.out
+
+# Local data files created when the program runs
+transactions.csv
+budgets.csv
+
+# Editor and OS files
+.vscode/
+.DS_Store
