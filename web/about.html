@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About - Expense Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Menu at the top of every page -->
+  <nav class="site-nav">
+    <a href="index.html" class="logo">Expense Tracker</a>
+    <a href="tracker.html">Tracker</a>
+    <a href="tips.html">Budget tips</a>
+    <a href="about.html" class="current">About</a>
+  </nav>
+
+  <h1>About this project</h1>
+
+  <section>
+    <h2>How it started</h2>
+    <p>Expense Tracker began as a C++ console program I wrote while learning to code.
+      It records income and expenses, sorts spending into categories, checks monthly budgets,
+      and prints reports. This website is the same tracker, rebuilt with HTML, CSS, and JavaScript
+      so anyone can use it in a browser.</p>
+  </section>
+
+  <section>
+    <h2>Your privacy</h2>
+    <p>Everything you type in the tracker is saved in your own browser using <code>localStorage</code>.
+      Nothing is sent to a server, there are no accounts, and nobody else can see your data.</p>
+    <p>That also means your entries only live on the device and browser you used. If you clear your
+      browser data or switch to another computer, you'll start with an empty tracker.</p>
+  </section>
+
+  <section>
+    <h2>How it's built</h2>
+    <ul>
+      <li><strong>HTML</strong> for the layout of each page</li>
+      <li><strong>CSS</strong> for the colors and spacing, in one shared <code>style.css</code> file</li>
+      <li><strong>JavaScript</strong> for the tracker itself (<code>app.js</code>) and the quick look on the home page (<code>home.js</code>)</li>
+      <li><strong>GitHub Pages</strong> to host the site for free</li>
+    </ul>
+    <p>The original C++ program and all of this website's code are on
+      <a href="https://github.com/brooklynnki9-arch/expense-tracker">GitHub</a>.</p>
+  </section>
+
+  <footer class="site-footer">
+    Made by Brooklyn Nki &middot; <a href="https://github.com/brooklynnki9-arch/expense-tracker">See the code on GitHub</a>
+  </footer>
+</body>
+</html>

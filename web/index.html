@@ -7,96 +7,70 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Expense Tracker</h1>
+  <!-- Menu at the top of every page -->
+  <nav class="site-nav">
+    <a href="index.html" class="logo">Expense Tracker</a>
+    <a href="tracker.html">Tracker</a>
+    <a href="tips.html">Budget tips</a>
+    <a href="about.html">About</a>
+  </nav>
 
-  <!-- Warning message, hidden until you go over a budget -->
-  <p id="warning" class="warning" hidden></p>
+  <!-- Big welcome box -->
+  <header class="hero">
+    <h1>Know where your money goes</h1>
+    <p>A free, simple tracker for your income and spending. Sort purchases into categories,
+      set monthly budgets, and see how much money you have left.</p>
+    <a href="tracker.html" class="button">Open the tracker</a>
+  </header>
 
-  <!-- Add income or an expense -->
-  <section>
-    <h2>Add an entry</h2>
-    <form id="entryForm">
-      <label>
-        Type
-        <select id="entryType">
-          <option value="Expense">Expense</option>
-          <option value="Income">Income</option>
-        </select>
-      </label>
-      <label>
-        Amount ($)
-        <input id="entryAmount" type="number" min="0.01" step="0.01" required>
-      </label>
-      <label id="categoryLabel">
-        Category
-        <select id="entryCategory">
-          <option>Food</option>
-          <option>Rent</option>
-          <option>Transport</option>
-          <option>Other</option>
-        </select>
-      </label>
-      <label>
-        Date
-        <input id="entryDate" type="date" required>
-      </label>
-      <button type="submit" id="saveButton">Add</button>
-      <button type="button" id="cancelButton" hidden>Cancel</button>
-    </form>
-  </section>
-
-  <!-- Report for one month (or all time) -->
-  <section>
-    <h2>Report</h2>
-    <label>
-      Month
-      <input id="reportMonth" type="month">
-    </label>
-    <label class="checkbox">
-      <input id="allTime" type="checkbox"> All time
-    </label>
-
+  <!-- Quick look at this month, filled in by home.js if you already have entries -->
+  <section id="quickLook" hidden>
+    <h2>This month so far</h2>
     <div class="totals">
-      <div>Income <strong id="totalIncome">$0.00</strong></div>
-      <div>Expenses <strong id="totalExpenses">$0.00</strong></div>
-      <div>Money left <strong id="moneyLeft">$0.00</strong></div>
+      <div>Income <strong id="quickIncome">$0.00</strong></div>
+      <div>Expenses <strong id="quickExpenses">$0.00</strong></div>
+      <div>Money left <strong id="quickLeft">$0.00</strong></div>
     </div>
-
-    <table>
-      <thead>
-        <tr><th>Category</th><th>Amount</th><th>Percent</th><th>Budget</th><th></th></tr>
-      </thead>
-      <tbody id="reportBody"></tbody>
-    </table>
   </section>
 
-  <!-- Monthly budgets -->
+  <!-- What the tracker can do -->
   <section>
-    <h2>Monthly budgets</h2>
-    <p class="hint">Type 0 or leave a box empty to have no budget for that category.</p>
-    <form id="budgetForm" class="budgets">
-      <label>Food <input data-category="Food" type="number" min="0" step="0.01"></label>
-      <label>Rent <input data-category="Rent" type="number" min="0" step="0.01"></label>
-      <label>Transport <input data-category="Transport" type="number" min="0" step="0.01"></label>
-      <label>Other <input data-category="Other" type="number" min="0" step="0.01"></label>
-      <button type="submit">Save budgets</button>
-    </form>
+    <h2>What it does</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Record income and expenses</h3>
+        <p>Add your pay and every purchase with its date.</p>
+      </div>
+      <div class="card">
+        <h3>Sort your spending</h3>
+        <p>Put each expense in Food, Rent, Transport, or Other.</p>
+      </div>
+      <div class="card">
+        <h3>Set budgets</h3>
+        <p>Pick a monthly limit for each category and get a warning when you go over.</p>
+      </div>
+      <div class="card">
+        <h3>See what's left</h3>
+        <p>Monthly and all-time reports show your totals and where most of your money went.</p>
+      </div>
+    </div>
   </section>
 
-  <!-- Every entry, with buttons to fix or delete it -->
+  <!-- Three steps to get started -->
   <section>
-    <h2>All entries</h2>
-    <table>
-      <thead>
-        <tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th><th></th></tr>
-      </thead>
-      <tbody id="entryList"></tbody>
-    </table>
-    <p id="noEntries" class="hint">No entries yet. Add one above.</p>
+    <h2>How to start</h2>
+    <ol class="steps">
+      <li>Open the <a href="tracker.html">tracker</a> and add the money you earned this month as income.</li>
+      <li>Add each thing you buy as an expense and pick a category for it.</li>
+      <li>Set a budget for each category, then check the report to see how much you have left.</li>
+    </ol>
+    <p class="hint">Your data is saved in your own browser only. Nobody else can see it, and you don't need an account.</p>
   </section>
 
-  <p class="hint">Your data is saved in this browser only. Nobody else can see it.</p>
+  <footer class="site-footer">
+    Made by Brooklyn Nki &middot; <a href="https://github.com/brooklynnki9-arch/expense-tracker">See the code on GitHub</a>
+  </footer>
 
-  <script src="app.js"></script>
+  <script src="home.js"></script>
 </body>
 </html>

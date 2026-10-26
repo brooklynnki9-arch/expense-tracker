@@ -128,3 +128,126 @@ th, td {
     font-size: 0.85em;
   }
 }
+
+/* ---------- Website parts shared by every page ---------- */
+
+/* Menu at the top */
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.site-nav a {
+  color: #2b6cb0;
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  text-decoration: underline;
+}
+
+/* The site name on the left, pushes the other links to the right */
+.site-nav .logo {
+  font-weight: bold;
+  color: #222;
+  margin-right: auto;
+}
+
+/* The page you are on right now */
+.site-nav a.current {
+  font-weight: bold;
+}
+
+/* Footer at the bottom */
+.site-footer {
+  text-align: center;
+  color: #666;
+  font-size: 0.85em;
+  padding: 16px 0;
+}
+
+/* A link that looks like a button */
+a.button {
+  display: inline-block;
+  background: #2b6cb0;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a.button:hover {
+  background: #2c5282;
+}
+
+/* ---------- Home page ---------- */
+
+/* Big welcome box */
+.hero {
+  text-align: center;
+  background: #2b6cb0;
+  color: white;
+  border-radius: 8px;
+  padding: 32px 16px;
+  margin-bottom: 16px;
+}
+
+.hero h1 {
+  margin-top: 0;
+}
+
+.hero p {
+  max-width: 520px;
+  margin: 0 auto 20px;
+  line-height: 1.5;
+}
+
+/* White button on the blue box */
+.hero a.button {
+  background: white;
+  color: #2b6cb0;
+}
+
+/* Feature boxes, two per row (one per row on phones) */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.card {
+  background: #f4f6f8;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 1em;
+}
+
+.card p {
+  margin: 0;
+  font-size: 0.9em;
+}
+
+.steps li {
+  margin-bottom: 8px;
+}
+
+/* Easier to read paragraphs on the tips and about pages */
+section p, section li {
+  line-height: 1.5;
+}
+
+@media (max-width: 500px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
